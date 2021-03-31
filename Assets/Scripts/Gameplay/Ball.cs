@@ -1,13 +1,6 @@
 using UnityEngine;
 using Zenject;
 
-/*
- * Powerups:
-    - Full boundary
-    - Ball splitter
-    - Sticky to paddle
-*/
-
 public class Ball : MonoBehaviour, IInitializable, IFixedTickable
 {
     [SerializeField]

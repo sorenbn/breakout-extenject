@@ -1,0 +1,17 @@
+Brick System:
+    - Brick types, with different behaviours
+    - Load levels from .txt, csv, third party editor?
+
+Powerups:
+    - Full boundary
+    - Ball splitter
+    - Sticky to paddle
+    - Wider paddle
+
+Inspiration: DX-Ball
+https://www.youtube.com/watch?v=fHX_2DLDp1w
+
+
+
+Other:
+Unity TODO Editor?
