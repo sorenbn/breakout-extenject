@@ -28,7 +28,7 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable
     public void Initialize()
     {
         body = GetComponent<Rigidbody2D>();
-        InitializeRandomVelocity();
+        SetDirection(Random.insideUnitCircle);
     }
 
     public void FixedTick()
@@ -44,9 +44,9 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable
         }
     }
 
-    public void InitializeRandomVelocity()
+    public void SetDirection(Vector2 direction)
     {
-        body.velocity = Random.insideUnitCircle.normalized * speed;
+        body.velocity = direction.normalized * speed;
     }
 
     private void ReflectX()

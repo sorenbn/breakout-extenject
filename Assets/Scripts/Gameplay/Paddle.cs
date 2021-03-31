@@ -25,6 +25,11 @@ public class Paddle : MonoBehaviour, ITickable, IBallCollidable
 
     public void OnBallCollided(Ball ball)
     {
-        //TODO: Powerup shit
+        Vector2 dir = (ball.transform.position - transform.position).normalized;
+
+        if (dir.y > 0.0f)
+        {
+            ball.SetDirection(dir);
+        }
     }
 }
