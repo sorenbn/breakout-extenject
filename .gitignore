@@ -1,0 +1,49 @@
+#ignore thumbnails created by windows
+Thumbs.db
+#Ignore files build by Visual Studio
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+*.lib
+*.sbr
+
+#NOTE: this will cause your collaborators to re-import assets periodically
+Temp/*
+Library/*
+Build/*
+_ReSharper.MathFu-csharp
+_ReSharper.MathFu
+bin
+obj
+Library
+Temp
+.vs/*
+
+#ignoring pidb, they are just code completion caching data according to:
+# http://stackoverflow.com/questions/1022111/what-are-monodevelops-pidb-files
+*.pidb
+*.userprefs
+*.suo
+StyleCop.*
+*.csproj
+*.unityproj
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+._*
+UnityLockfile
+*.user
