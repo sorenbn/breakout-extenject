@@ -11,8 +11,7 @@ public class MapBoundary : IInitializable, ITickable
         get; private set;
     }
 
-    [Inject]
-    public void Bind(Settings settings, CameraController2D cameraController)
+    public MapBoundary(Settings settings, CameraController2D cameraController)
     {
         this.settings = settings;
         this.cameraController = cameraController;

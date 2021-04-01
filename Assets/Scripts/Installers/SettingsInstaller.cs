@@ -7,8 +7,12 @@ public class SettingsInstaller : ScriptableObjectInstaller<SettingsInstaller>
     [SerializeField]
     private MapBoundary.Settings mapBoundarySettings;
 
+    [SerializeField]
+    private BrickManager.Settings brickManagerSettings;
+
     public override void InstallBindings()
     {
-        Container.BindInstances(mapBoundarySettings);
+        Container.BindInstances(mapBoundarySettings, 
+            brickManagerSettings);
     }
 }

@@ -1,8 +1,9 @@
 using UnityEngine;
+using Zenject;
 
-public class CursorManager : MonoBehaviour
+public class CursorManager : IInitializable
 {
-    private void Awake()
+    public void Initialize()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Confined;
