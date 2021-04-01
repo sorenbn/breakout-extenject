@@ -4,16 +4,17 @@ using Zenject;
 
 public class BrickManager : IInitializable
 {
+    [Inject]
+    private Brick.Pool brickPool;
+
     private readonly Settings settings;
-    private readonly Brick.Factory brickFactory;
     private readonly MapBoundary mapBounds;
 
     private List<Brick> spawnedBricks;
 
-    public BrickManager(Settings settings, Brick.Factory brickFactory, MapBoundary mapBounds)
+    public BrickManager(Settings settings, MapBoundary mapBounds)
     {
         this.settings = settings;
-        this.brickFactory = brickFactory;
         this.mapBounds = mapBounds;
 
         spawnedBricks = new List<Brick>();
@@ -25,7 +26,7 @@ public class BrickManager : IInitializable
         {
             for (int x = 0; x < settings.DimensionX; x++)
             {
-                var brick = brickFactory.Create();
+                var brick = brickPool.Spawn();
                 Vector2 position = mapBounds.CameraWorldBounds.center
                     - new Vector3(mapBounds.CameraWorldBounds.extents.x / 2, 0)
                     + new Vector3(x, y);
@@ -40,7 +41,7 @@ public class BrickManager : IInitializable
     public void DestroyBrick(Brick brick)
     {
         spawnedBricks.Remove(brick);
-        Object.Destroy(brick.gameObject);
+        brickPool.Despawn(brick);
     }
 
     [System.Serializable]

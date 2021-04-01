@@ -12,8 +12,13 @@ public class BreakoutInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<MapBoundary>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<BrickManager>().AsSingle();
-        Container.BindFactory<Brick, Brick.Factory>()
+        Container.BindMemoryPool<Brick, Brick.Pool>()
+            .WithInitialSize(60)
+            .ExpandByDoubling()
             .FromComponentInNewPrefab(brickPrefab)
-            .UnderTransformGroup("Bricks");
-    }
+#if UNITY_EDITOR
+            .UnderTransformGroup("Bricks")
+#endif
+            ;
+        }
 }
