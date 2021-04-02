@@ -24,9 +24,8 @@ public class Brick : MonoBehaviour, IBallCollidable
         {
             base.OnCreated(item);
 
-            //Manual injection to avoid runtime reflection on every brick!
+            //Manual injection to avoid runtime reflection on every brick, whenever it's created!
             item.ManualBind(brickManager);
-            item.transform.position = Vector3.up * 100;
         }
 
         protected override void OnSpawned(Brick item)

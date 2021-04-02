@@ -22,6 +22,17 @@ public class BrickManager : IInitializable
 
     public void Initialize()
     {
+        SpawnBricks();
+    }
+
+    public void DestroyBrick(Brick brick)
+    {
+        spawnedBricks.Remove(brick);
+        brickPool.Despawn(brick);
+    }
+
+    private void SpawnBricks()
+    {
         for (int y = 0; y < settings.DimensionY; y++)
         {
             for (int x = 0; x < settings.DimensionX; x++)
@@ -38,10 +49,14 @@ public class BrickManager : IInitializable
         }
     }
 
-    public void DestroyBrick(Brick brick)
+    private void ClearBricks()
     {
-        spawnedBricks.Remove(brick);
-        brickPool.Despawn(brick);
+        for (int i = spawnedBricks.Count - 1; i >= 0; i--)
+        {
+            brickPool.Despawn(spawnedBricks[i]);
+        }
+
+        brickPool.Clear();
     }
 
     [System.Serializable]

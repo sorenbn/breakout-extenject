@@ -8,6 +8,10 @@ public class BreakoutInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
+        SignalBusInstaller.Install(Container);
+
+        Container.DeclareSignal<PlayerInputSignal>();
+
         Container.BindInterfacesAndSelfTo<CursorManager>().AsSingle();
         Container.BindInterfacesAndSelfTo<MapBoundary>().AsSingle();
 
