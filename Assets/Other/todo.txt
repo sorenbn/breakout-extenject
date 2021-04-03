@@ -1,6 +1,5 @@
 Game Flow
     - Win condition
-    - Lose condition
     - UI
 
 Brick System:
@@ -13,10 +12,8 @@ Powerups:
     - Sticky to paddle
     - Wider paddle
 
-Inspiration: DX-Ball
-https://www.youtube.com/watch?v=fHX_2DLDp1w
-
-
-
 Other:
 Unity TODO Editor?
+
+Inspiration: DX-Ball
+https://www.youtube.com/watch?v=fHX_2DLDp1w
