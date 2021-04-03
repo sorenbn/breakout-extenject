@@ -1,14 +1,8 @@
-using System;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
-/*
- * TODO: 
- * Make into a MonoMemoryPool, to be able to spawn N amount of balls through powerup
- */
-
-public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IDisposable
+public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IPoolable
 {
     [SerializeField]
     private float speed = 2.0f;
@@ -20,8 +14,7 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IDisposable
     private MapBoundary mapBounds;
     private SignalBus signalBus;
 
-    [Inject]
-    public void Inject(MapBoundary mapBounds, SignalBus signalBus)
+    public void ManualBind(MapBoundary mapBounds, SignalBus signalBus)
     {
         this.mapBounds = mapBounds;
         this.signalBus = signalBus;
@@ -30,20 +23,26 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IDisposable
     public void Initialize()
     {
         body = GetComponent<Rigidbody2D>();
-
-        SetSimulated(false);
-        SetDirection(GetRandomStartVector());
-
-        signalBus.Subscribe<PlayerInputSignal>(OnPlayerInput);
     }
 
-    public void Dispose()
+    public void OnSpawned()
+    {
+        signalBus.Subscribe<PlayerInputSignal>(OnPlayerInput);
+        SetSimulated(false);
+    }
+
+    public void OnDespawned()
     {
         signalBus.Unsubscribe<PlayerInputSignal>(OnPlayerInput);
     }
 
     public void FixedTick()
     {
+        if (InDeadZone())
+        {
+            signalBus.Fire(new BallLostSignal { Ball = this });
+        }
+
         if (OutsideHorizontalBounds())
         {
             ReflectX();
@@ -83,14 +82,27 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IDisposable
 
     private bool OutsideVerticalBounds()
     {
-        return (body.position.y > mapBounds.CameraWorldBounds.max.y - render.bounds.extents.y && body.velocity.y > 0)
-                    || (body.position.y < mapBounds.CameraWorldBounds.min.y + render.bounds.extents.y && body.velocity.y < 0);
+        return body.position.y > mapBounds.CameraWorldBounds.max.y - render.bounds.extents.y && body.velocity.y > 0;
+    }
+
+    private bool InDeadZone()
+    {
+        return body.position.y < mapBounds.CameraWorldBounds.min.y + render.bounds.extents.y && body.velocity.y < 0;
+    }
+
+    private Vector2 GetRandomStartVector()
+    {
+        Vector2 rndDirection = Random.insideUnitCircle;
+        rndDirection.y = 1.0f;
+
+        return rndDirection;
     }
 
     private void OnPlayerInput()
     {
         if (!body.simulated)
         {
+            SetDirection(GetRandomStartVector());
             SetSimulated(true);
         }   
     }
@@ -103,11 +115,42 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IDisposable
         }
     }
 
-    private Vector2 GetRandomStartVector()
+    public class Pool : MonoMemoryPool<Ball>
     {
-        Vector2 rndDirection = Random.insideUnitCircle;
-        rndDirection.y = 1.0f;
+        private readonly MapBoundary mapBounds;
+        private readonly SignalBus signalBus;
+        private readonly TickableManager tickManager;
 
-        return rndDirection;
+        public Pool(MapBoundary mapBounds, 
+            SignalBus signalBus, 
+            TickableManager tickManager)
+        {
+            this.mapBounds = mapBounds;
+            this.signalBus = signalBus;
+            this.tickManager = tickManager;
+        }
+
+        protected override void OnCreated(Ball item)
+        {
+            base.OnCreated(item);
+            item.ManualBind(mapBounds, signalBus);
+            item.Initialize();
+        }
+
+        protected override void OnSpawned(Ball item)
+        {
+            base.OnSpawned(item);
+
+            item.OnSpawned();
+            tickManager.AddFixed(item);
+        }
+
+        protected override void OnDespawned(Ball item)
+        {
+            base.OnDespawned(item);
+            
+            tickManager.RemoveFixed(item);
+            item.OnDespawned();
+        }
     }
 }

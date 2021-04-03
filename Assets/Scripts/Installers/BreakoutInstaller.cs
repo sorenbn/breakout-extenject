@@ -6,6 +6,9 @@ public class BreakoutInstaller : MonoInstaller
     [SerializeField]
     private Brick brickPrefab;
 
+    [SerializeField]
+    private Ball ballPrefab;
+
     public override void InstallBindings()
     {
         InstallSignals();
@@ -18,6 +21,8 @@ public class BreakoutInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<BrickManager>().AsSingle();
         Container.Bind<IBrickSpawner>().To<BrickSpawnerDev>().AsSingle();
 
+        Container.BindInterfacesAndSelfTo<BallManager>().AsSingle();
+
         Container.BindMemoryPool<Brick, Brick.Pool>()
             .WithInitialSize(60)
             .ExpandByDoubling()
@@ -26,13 +31,22 @@ public class BreakoutInstaller : MonoInstaller
             .UnderTransformGroup("Bricks")
 #endif
             ;
+
+        Container.BindMemoryPool<Ball, Ball.Pool>()
+            .WithInitialSize(10)
+            .ExpandByDoubling()
+            .FromComponentInNewPrefab(ballPrefab)
+#if UNITY_EDITOR
+            .UnderTransformGroup("Balls")
+#endif
+            ;
     }
 
     private void InstallSignals()
     {
         SignalBusInstaller.Install(Container);
 
-        Container.DeclareSignal<PlayerInputSignal>();
+        Container.DeclareSignal<PlayerInputSignal>().OptionalSubscriber();
         Container.DeclareSignal<BallLostSignal>();
         Container.DeclareSignal<BrickDestroyedSignal>();
     }
