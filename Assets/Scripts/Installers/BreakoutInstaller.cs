@@ -8,9 +8,7 @@ public class BreakoutInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        SignalBusInstaller.Install(Container);
-
-        Container.DeclareSignal<PlayerInputSignal>();
+        InstallSignals();
 
         Container.BindInterfacesAndSelfTo<CursorManager>().AsSingle();
         Container.BindInterfacesAndSelfTo<MapBoundary>().AsSingle();
@@ -24,5 +22,12 @@ public class BreakoutInstaller : MonoInstaller
             .UnderTransformGroup("Bricks")
 #endif
             ;
-        }
+    }
+
+    private void InstallSignals()
+    {
+        SignalBusInstaller.Install(Container);
+
+        Container.DeclareSignal<PlayerInputSignal>();
+    }
 }

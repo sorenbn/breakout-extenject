@@ -30,10 +30,11 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IDisposable
     public void Initialize()
     {
         body = GetComponent<Rigidbody2D>();
-        signalBus.Subscribe<PlayerInputSignal>(OnPlayerInput);
 
         SetSimulated(false);
-        SetDirection(Random.insideUnitCircle);
+        SetDirection(GetRandomStartVector());
+
+        signalBus.Subscribe<PlayerInputSignal>(OnPlayerInput);
     }
 
     public void Dispose()
@@ -100,5 +101,13 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IDisposable
         {
             collidable.OnBallCollided(this);
         }
+    }
+
+    private Vector2 GetRandomStartVector()
+    {
+        Vector2 rndDirection = Random.insideUnitCircle;
+        rndDirection.y = 1.0f;
+
+        return rndDirection;
     }
 }

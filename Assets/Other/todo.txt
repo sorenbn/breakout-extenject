@@ -1,3 +1,8 @@
+Game Flow
+    - UI
+    - Win condition
+    - Lose condition
+
 Brick System:
     - Brick types, with different behaviours
     - Load levels from .txt, csv, third party editor?
