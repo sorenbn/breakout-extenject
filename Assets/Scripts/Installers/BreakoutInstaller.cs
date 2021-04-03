@@ -10,10 +10,14 @@ public class BreakoutInstaller : MonoInstaller
     {
         InstallSignals();
 
+        Container.Bind<RoutineRunner>().FromNewComponentOnNewGameObject().AsSingle();
+
         Container.BindInterfacesAndSelfTo<CursorManager>().AsSingle();
         Container.BindInterfacesAndSelfTo<MapBoundary>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<BrickManager>().AsSingle();
+        Container.Bind<IBrickSpawner>().To<BrickSpawnerDev>().AsSingle();
+
         Container.BindMemoryPool<Brick, Brick.Pool>()
             .WithInitialSize(60)
             .ExpandByDoubling()
@@ -29,5 +33,7 @@ public class BreakoutInstaller : MonoInstaller
         SignalBusInstaller.Install(Container);
 
         Container.DeclareSignal<PlayerInputSignal>();
+        Container.DeclareSignal<BallLostSignal>();
+        Container.DeclareSignal<BrickDestroyedSignal>();
     }
 }

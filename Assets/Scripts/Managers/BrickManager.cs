@@ -1,65 +1,48 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 
-public class BrickManager : IInitializable
+public class BrickManager : IInitializable, IDisposable
 {
-    [Inject]
-    private Brick.Pool brickPool;
-
-    private readonly Settings settings;
-    private readonly MapBoundary mapBounds;
+    private readonly SignalBus signalBus;
+    private readonly IBrickSpawner brickSpawner;
 
     private List<Brick> spawnedBricks;
 
-    public BrickManager(Settings settings, MapBoundary mapBounds)
+    public BrickManager(SignalBus signalBus, IBrickSpawner brickSpawner)
     {
-        this.settings = settings;
-        this.mapBounds = mapBounds;
-
-        spawnedBricks = new List<Brick>();
+        this.signalBus = signalBus;
+        this.brickSpawner = brickSpawner;
     }
 
     public void Initialize()
     {
         SpawnBricks();
+        signalBus.Subscribe<BrickDestroyedSignal>(OnBrickDestroyed);
     }
 
-    public void DestroyBrick(Brick brick)
+    public void Dispose()
     {
-        spawnedBricks.Remove(brick);
-        brickPool.Despawn(brick);
+        signalBus.Unsubscribe<BrickDestroyedSignal>(OnBrickDestroyed);
+    }
+
+    private void OnBrickDestroyed(BrickDestroyedSignal signal)
+    {
+        DestroyBrick(signal.Brick);
     }
 
     private void SpawnBricks()
     {
-        for (int y = 0; y < settings.DimensionY; y++)
-        {
-            for (int x = 0; x < settings.DimensionX; x++)
-            {
-                var brick = brickPool.Spawn();
-                Vector2 position = mapBounds.CameraWorldBounds.center
-                    - new Vector3(mapBounds.CameraWorldBounds.extents.x / 2, 0)
-                    + new Vector3(x, y);
-
-                brick.transform.position = position;
-
-                spawnedBricks.Add(brick);
-            }
-        }
+        spawnedBricks = brickSpawner.SpawnBricks();
     }
 
-    private void ClearBricks()
+    private void DestroyBrick(Brick brick)
     {
-        for (int i = spawnedBricks.Count - 1; i >= 0; i--)
-        {
-            brickPool.Despawn(spawnedBricks[i]);
-        }
-
-        brickPool.Clear();
+        spawnedBricks.Remove(brick);
+        brickSpawner.DespawnBrick(brick);
     }
 
-    [System.Serializable]
+    [Serializable]
     public class Settings
     {
         public int DimensionX;

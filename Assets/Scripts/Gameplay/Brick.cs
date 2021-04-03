@@ -3,39 +3,34 @@ using Zenject;
 
 public class Brick : MonoBehaviour, IBallCollidable
 {
-    private BrickManager brickManager;
+    private SignalBus signalBus;
 
-    private void ManualBind(BrickManager brickManager)
+    private void ManualBind(SignalBus signalBus)
     {
-        this.brickManager = brickManager;
+        this.signalBus = signalBus;
     }
 
     public void OnBallCollided(Ball ball)
     {
-        brickManager.DestroyBrick(this);
+        signalBus.Fire(new BrickDestroyedSignal 
+        { 
+            Brick = this,
+        });
     }
 
     public class Pool : MonoMemoryPool<Brick>
     {
-        [Inject]
-        private BrickManager brickManager;
+        private SignalBus signalBus;
+
+        public Pool(SignalBus signalBus)
+        {
+            this.signalBus = signalBus;
+        }
 
         protected override void OnCreated(Brick item)
         {
             base.OnCreated(item);
-
-            //Manual injection to avoid runtime reflection on every brick, whenever it's created!
-            item.ManualBind(brickManager);
-        }
-
-        protected override void OnSpawned(Brick item)
-        {
-            base.OnSpawned(item);
-        }
-
-        protected override void OnDespawned(Brick item)
-        {
-            base.OnDespawned(item);
+            item.ManualBind(signalBus);
         }
     }
 }
