@@ -34,6 +34,7 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IPoolable
     public void OnDespawned()
     {
         signalBus.Unsubscribe<PlayerInputSignal>(OnPlayerInput);
+        SetSimulated(false);
     }
 
     public void FixedTick()
@@ -133,6 +134,7 @@ public class Ball : MonoBehaviour, IInitializable, IFixedTickable, IPoolable
         protected override void OnCreated(Ball item)
         {
             base.OnCreated(item);
+
             item.ManualBind(mapBounds, signalBus);
             item.Initialize();
         }

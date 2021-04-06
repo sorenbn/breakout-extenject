@@ -47,6 +47,9 @@ public class BreakoutInstaller : MonoInstaller
         SignalBusInstaller.Install(Container);
 
         Container.DeclareSignal<PlayerInputSignal>().OptionalSubscriber();
+        Container.DeclareSignal<PlayerWonSignal>().OptionalSubscriber();
+        Container.DeclareSignal<PlayerLostSignal>().OptionalSubscriber();
+
         Container.DeclareSignal<BallLostSignal>();
         Container.DeclareSignal<BrickDestroyedSignal>();
     }

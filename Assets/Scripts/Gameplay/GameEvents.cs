@@ -2,6 +2,14 @@ public class PlayerInputSignal
 {
 }
 
+public class PlayerWonSignal
+{
+}
+
+public class PlayerLostSignal
+{
+}
+
 public class BallLostSignal
 {
     public Ball Ball

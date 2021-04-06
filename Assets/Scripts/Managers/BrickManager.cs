@@ -18,17 +18,15 @@ public class BrickManager : IInitializable, IDisposable
     public void Initialize()
     {
         SpawnBricks();
+
         signalBus.Subscribe<BrickDestroyedSignal>(OnBrickDestroyed);
+        signalBus.Subscribe<PlayerLostSignal>(OnPlayerLostSignal);
     }
 
     public void Dispose()
     {
         signalBus.Unsubscribe<BrickDestroyedSignal>(OnBrickDestroyed);
-    }
-
-    private void OnBrickDestroyed(BrickDestroyedSignal signal)
-    {
-        DestroyBrick(signal.Brick);
+        signalBus.Unsubscribe<PlayerLostSignal>(OnPlayerLostSignal);
     }
 
     private void SpawnBricks()
@@ -40,6 +38,36 @@ public class BrickManager : IInitializable, IDisposable
     {
         spawnedBricks.Remove(brick);
         brickSpawner.DespawnBrick(brick);
+
+        if (spawnedBricks.Count == 0)
+        {
+            ResetBricks();
+            signalBus.Fire<PlayerWonSignal>();
+
+            SpawnBricks();
+        }
+    }
+
+    private void ResetBricks()
+    {
+        for (int i = spawnedBricks.Count - 1; i >= 0; i--)
+        {
+            brickSpawner.DespawnBrick(spawnedBricks[i]);
+            spawnedBricks.Remove(spawnedBricks[i]);
+        }
+
+        spawnedBricks.Clear();
+    }
+
+    private void OnBrickDestroyed(BrickDestroyedSignal signal)
+    {
+        DestroyBrick(signal.Brick);
+    }
+
+    private void OnPlayerLostSignal()
+    {
+        ResetBricks();
+        SpawnBricks();
     }
 
     [Serializable]

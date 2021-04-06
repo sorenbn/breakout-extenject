@@ -1,6 +1,7 @@
 Game Flow
-    - Win condition
     - UI
+
+Scoring System
 
 Brick System:
     - Brick types, with different behaviours
